@@ -1,0 +1,7 @@
+subclass_name: dc2_truth22i.DC2Truth22CatalogReader
+
+filename: /global/cscratch1/sd/desc/test/truth/summary_table_magcut_hp9430_million.sqlite3
+description: |
+    Truth catalog for Run 2.2i, healpixl 9430, first million static objects (galaxies only).
+is_static : True
+table_name : truth_summary
