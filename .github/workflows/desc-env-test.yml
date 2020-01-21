@@ -15,9 +15,17 @@ jobs:
           fetch-depth: 1
       - name: do docker pull
         run: docker pull lsstdesc/stack-jupyter:latest 
-      - name: Install gcr master
-        run: docker run --name="updateGCR" lsstdesc/stack-jupyter:latest /bin/bash -c "source /opt/lsst/software/stack/loadLSST.bash; pip install https://github.com/LSSTDESC/gcr-catalogs/archive/master.zip"
+      - name: pull desc-python
+        run: docker pull lsstdesc/desc-python:latest
+      - name: Install gcr master in desc-python
+        run: docker run --name="updateGCRpy" lsstdesc/desc-python:latest /bin/bash -c "source /opt/lsst/software/stack/loadLSST.bash; pip install https://github.com/LSSTDESC/gcr-catalogs/archive/master.zip"
+      - name: Install gcr master in desc-stack
+        run: docker run --name="updateGCRstack" lsstdesc/stack-jupyter:latest /bin/bash -c "source /opt/lsst/software/stack/loadLSST.bash; pip install https://github.com/LSSTDESC/gcr-catalogs/archive/master.zip"
+      - name: docker commit desc-python:test
+        run: docker commit -m="Installed latest GCR master" updateGCRpy lsstdesc/desc-python:test
       - name: docker commit
-        run: docker commit -m="Installed latest GCR master" updateGCR lsstdesc/stack-jupyter:test
-      - name: Docker push
+        run: docker commit -m="Installed latest GCR master" updateGCRstack lsstdesc/stack-jupyter:test
+      - name: push desc-python
+        run: docker push lsstdesc/desc-python:test
+      - name: Docker push desc-stack
         run: docker push lsstdesc/stack-jupyter:test
