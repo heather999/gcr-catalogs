@@ -1,0 +1,23 @@
+name: desc-env-test
+
+on: [push]
+
+jobs:
+  build:
+    name: Build on Ubuntu
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Docker login
+        run: echo '${{ secrets.DOCKERHUB_ACCESSTOK }}' | docker login --username heather999 --password-stdin
+      - name: checkout gcr-catalogs
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: do docker pull
+        run: docker pull lsstdesc/stack-jupyter:latest 
+      - name: Install gcr master
+        run: docker run --name="updateGCR" lsstdesc/stack-jupyter:latest /bin/bash -c "source /opt/lsst/software/stack/loadLSST.bash; pip install https://github.com/LSSTDESC/gcr-catalogs/archive/master.zip"
+      - name: docker commit
+        run: docker commit -m="Installed latest GCR master" updateGCR lsstdesc/stack-jupyter:test
+      - name: Docker push
+        run: docker push lsstdesc/stack-jupyter:test
